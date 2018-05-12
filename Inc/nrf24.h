@@ -17,10 +17,10 @@
 #define False           0x00
 
 
-#define NRF24_CSN_Port     GPIOA
+#define NRF24_CSN_Port      GPIOA
 #define NRF24_CSN_Pin       GPIO_PIN_3
 
-#define NRF24_CE_Port      GPIOA
+#define NRF24_CE_Port       GPIOA
 #define NRF24_CE_Pin        GPIO_PIN_4
 
 #define NRF24_CSN_Low()     HAL_GPIO_WritePin(NRF24_CSN_Port, NRF24_CSN_Pin, GPIO_PIN_RESET)
@@ -184,10 +184,10 @@ typedef enum {
 
 
 typedef enum {
-	    Max_Retry,
+	    TX_Max_Retry,
 		Tx_Data_Sent,
 		Rx_Data_Received
-} IRQ_Mask;
+} IRQ_Mask,NRF24_Status;
 
 void NRF24_Init(void);
 
@@ -265,6 +265,11 @@ void NRF24_Transmit_Payoad(void);
 void NRF24_Enable_Dynamic_Payload(Pipe_No pipe);
 
 void NRF24_Enable_ACK_Payload(void);
+
+void NRF24_Write_ACK_Payload(uint8_t pipe, uint8_t *buf, uint8_t bytes);
+
+uint8_t NRF24_Read_Status(void);
+
 
 
 

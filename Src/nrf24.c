@@ -10,7 +10,6 @@
 #include "nrf24.h"
 #include "delay_us.h"
 
-
 void NRF24_Init(void)
 {
 	/*************SPI port configured in cube***********************/
@@ -42,7 +41,6 @@ void NRF24_Init(void)
 	HAL_GPIO_Init(NRF24_CE_Port, &GPIO_InitStruct);
 
 }
-
 
 uint8_t SPI_TxRx(uint8_t reg)
 {
@@ -326,7 +324,7 @@ void NRF24_Read_RX_Payload(uint8_t *buff_pointer, uint8_t bytes)
 {
 	if (bytes <= 32)
 	{
-		NRF24_Read_Buffer(WR_TX_PLOAD, buff_pointer, bytes);
+		NRF24_Read_Buffer(RD_RX_PLOAD, buff_pointer, bytes);
 	}
 	else
 	{
@@ -696,7 +694,7 @@ void NRF24_Disable_IRQ(IRQ_Mask mask)
 {
 	int8_t config;
 	config = NRF24_Read_Register(CONFIG);
-	if (mask == Max_Retry)
+	if (mask == TX_Max_Retry)
 	{
 		NRF24_Write_Register(CONFIG, (config | CONFIG_MAX_RT ));
 
@@ -720,7 +718,7 @@ void NRF24_Clear_IRQ(IRQ_Mask mask)
 {
 	uint8_t status;
 	status = NRF24_Read_Register(STATUS);
-	if (mask == Max_Retry)
+	if (mask == TX_Max_Retry)
 	{
 		NRF24_Write_Register(STATUS, (status | STAT_MAX_RT ));
 
@@ -787,5 +785,24 @@ void NRF24_Write_ACK_Payload(uint8_t pipe, uint8_t *buf, uint8_t bytes)
 	}
 }
 
-//error Funtions
+NRF24_Status NRF24_Read_Status(void)
+{
+	uint8_t NRF24_Status;
+	uint8_t temp = 0;
+	NRF24_Status = NRF24_Read_Register(STATUS);
 
+	if (NRF24_Status & STAT_TX_DS)
+	{
+		temp = Tx_Data_Sent; //data sent
+	}
+	if (NRF24_Status & STAT_MAX_RT)
+	{
+		temp = TX_Max_Retry; //
+	}
+	if (NRF24_Status & STAT_RX_DR)
+	{
+		temp = Rx_Data_Received; //
+	}
+
+	return temp;
+}
