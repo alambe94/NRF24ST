@@ -10,24 +10,17 @@
 
 /* NRF24 definations  */
 
-#define MAX_RT          0x10  // Max #of TX retransmission interrupt
-#define TX_DS           0x20  // TX data sent interrupt
-#define RX_DR           0x40  // RX data received
-#define True            0x01
-#define False           0x00
+#define NRF24_CSN_PORT      GPIOB
+#define NRF24_CSN_PIN       GPIO_PIN_1
 
+#define NRF24_CE_PORT       GPIOA
+#define NRF24_CE_PIN        GPIO_PIN_4
 
-#define NRF24_CSN_Port      GPIOA
-#define NRF24_CSN_Pin       GPIO_PIN_3
+#define NRF24_CSN_LOW()     HAL_GPIO_WritePin(NRF24_CSN_PORT, NRF24_CSN_PIN, GPIO_PIN_RESET)
+#define NRF24_CSN_HIGH()    HAL_GPIO_WritePin(NRF24_CSN_PORT, NRF24_CSN_PIN, GPIO_PIN_SET)
 
-#define NRF24_CE_Port       GPIOA
-#define NRF24_CE_Pin        GPIO_PIN_4
-
-#define NRF24_CSN_Low()     HAL_GPIO_WritePin(NRF24_CSN_Port, NRF24_CSN_Pin, GPIO_PIN_RESET)
-#define NRF24_CSN_High()    HAL_GPIO_WritePin(NRF24_CSN_Port, NRF24_CSN_Pin, GPIO_PIN_SET)
-
-#define NRF24_CE_Low()      HAL_GPIO_WritePin(NRF24_CE_Port, NRF24_CE_Pin, GPIO_PIN_RESET)
-#define NRF24_CE_High()     HAL_GPIO_WritePin(NRF24_CE_Port, NRF24_CE_Pin, GPIO_PIN_SET)
+#define NRF24_CE_LOW()      HAL_GPIO_WritePin(NRF24_CE_PORT, NRF24_CE_PIN, GPIO_PIN_RESET)
+#define NRF24_CE_HIGH()     HAL_GPIO_WritePin(NRF24_CE_PORT, NRF24_CE_PIN, GPIO_PIN_SET)
 
 
 /* nRF24L01 Instruction Definitions */

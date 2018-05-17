@@ -4,7 +4,7 @@
  *  Created on: Sep 20, 2016
  *      Author: medprime4
  */
-#include "stm32f1xx_hal.h"
+#include "stm32f0xx_hal.h"
 #include "spi.h"
 #include "gpio.h"
 #include "nrf24.h"
@@ -27,18 +27,20 @@ void NRF24_Init(void)
 	;
 
 	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(NRF24_CSN_Port, NRF24_CSN_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(NRF24_CE_Port, NRF24_CE_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(NRF24_CSN_PORT, NRF24_CSN_PIN, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(NRF24_CE_PORT, NRF24_CE_PIN, GPIO_PIN_SET);
 
 	/*Configure GPIO pins : PAPin PAPin PAPin */
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
 
-	GPIO_InitStruct.Pin = NRF24_CSN_Pin;
-	HAL_GPIO_Init(NRF24_CSN_Port, &GPIO_InitStruct);
 
-	GPIO_InitStruct.Pin = NRF24_CE_Pin;
-	HAL_GPIO_Init(NRF24_CE_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = NRF24_CSN_PIN;
+	HAL_GPIO_Init(NRF24_CSN_PORT, &GPIO_InitStruct);
+
+	GPIO_InitStruct.Pin = NRF24_CE_PIN;
+	HAL_GPIO_Init(NRF24_CE_PORT, &GPIO_InitStruct);
 
 }
 
@@ -56,12 +58,12 @@ uint8_t SPI_TxRx(uint8_t reg)
 uint8_t NRF24_Read_Register(uint8_t reg)
 {
 	uint8_t value = 0;
-	if (reg <= 0x1D)
+	if (reg <= 32)
 	{
-		NRF24_CSN_Low();
+		NRF24_CSN_LOW();
 		SPI_TxRx(reg); /* Transmit register to read */
 		value = SPI_TxRx(0x00); /* Then get the register value */
-		NRF24_CSN_High();
+		NRF24_CSN_HIGH();
 	}
 	else
 	{
@@ -76,12 +78,12 @@ uint8_t NRF24_Read_Register(uint8_t reg)
 void NRF24_Write_Register(uint8_t reg, uint8_t val)
 {
 
-	if (reg <= 0x1D)
+	if (reg <= 32)
 	{
-		NRF24_CSN_Low();
+		NRF24_CSN_LOW();
 		SPI_TxRx(WRITE_REG_NRF | reg);
 		SPI_TxRx(val);
-		NRF24_CSN_High();
+		NRF24_CSN_HIGH();
 	}
 
 	else
@@ -120,13 +122,13 @@ void NRF24_Read_Buffer(uint8_t reg, uint8_t *buff_pointer, uint8_t bytes)
 #ifdef  NRF24_Debug_Enable
 		Print_Debug_Buffer(4, reg, bytes , buff_pointer);
 #endif
-		NRF24_CSN_Low();                     // Set CSN low, init SPI tranaction
+		NRF24_CSN_LOW();                     // Set CSN low, init SPI tranaction
 		SPI_TxRx(reg);  // Select register to write to and read status byte
 		for (byte_ctr = 0; byte_ctr < bytes; byte_ctr++)
 		{
 			*buff_pointer++ = SPI_TxRx(0x00);
 		} // Perform SPI_RW to read byte from nRF24L01
-		NRF24_CSN_High();    // Set CSN high again
+		NRF24_CSN_HIGH();    // Set CSN high again
 
 	}
 	else
@@ -146,13 +148,13 @@ void NRF24_Write_Buffer(uint8_t reg, uint8_t *addr_pointer, uint8_t bytes)
 #ifdef  NRF24_Debug_Enable
 		Print_Debug_Buffer(3, reg, bytes,addr_pointer);
 #endif
-		NRF24_CSN_Low();                     // Set CSN low, init SPI tranaction
+		NRF24_CSN_LOW();                     // Set CSN low, init SPI tranaction
 		SPI_TxRx(WRITE_REG_NRF | reg);
 		for (byte_ctr = 0; byte_ctr < bytes; byte_ctr++)
 		{ // then write all byte in buffer(*pBuf)
 			SPI_TxRx(*addr_pointer++);
 		}
-		NRF24_CSN_High();                                  // Set CSN high again
+		NRF24_CSN_HIGH();                                  // Set CSN high again
 
 	}
 	else
@@ -305,7 +307,9 @@ void NRF24_Read_Pipe_Addrress(Pipe_No pipe, uint8_t *buff_pointer)
 	}
 
 }
-
+/*
+The width of TX-payload
+is counted from the number of bytes written into the TX FIFO from the MCU. */
 void NRF24_Write_TX_Payload(uint8_t *buff_pointer, uint8_t bytes)
 {
 	if (bytes <= 32)
@@ -340,7 +344,7 @@ void NRF24_Enable_Pipe(Pipe_No pipe)
 	if (pipe <= Pipe5)
 	{
 		pipes = NRF24_Read_Register(EN_RXADDR);
-		pipes |= pipe;
+		pipes |= (pipe<<1);
 		NRF24_Write_Register(EN_RXADDR, pipes);
 	}
 	else
@@ -357,7 +361,7 @@ void NRF24_Disble_Pipe(Pipe_No pipe)
 	if (pipe <= Pipe5)
 	{
 		pipes = NRF24_Read_Register(EN_RXADDR);
-		pipes &= ~pipe;
+		pipes &= ~(pipe<<1);
 		NRF24_Write_Register(EN_RXADDR, pipes);
 	}
 	else
@@ -374,7 +378,7 @@ void NRF24_Enable_Auto_ACK(Pipe_No pipe)
 	if (pipe <= Pipe5)
 	{
 		pipes = NRF24_Read_Register(EN_AA);
-		pipes |= pipe;
+		pipes |= (pipe<<1);
 		NRF24_Write_Register(EN_AA, pipes);
 
 	}
@@ -392,7 +396,7 @@ void NRF24_Disble_Auto_ACK(Pipe_No pipe)
 	if (pipe <= Pipe5)
 	{
 		pipes = NRF24_Read_Register(EN_AA);
-		pipes &= ~pipe;
+		pipes &= ~(pipe<<1);
 		NRF24_Write_Register(EN_AA, pipes);
 
 	}
@@ -456,9 +460,9 @@ uint8_t NRF24_Read_Pipe_Data_Width(Pipe_No pipe)
 
 void NRF24_Flush_TX(void)
 {
-	NRF24_CSN_Low();
+	NRF24_CSN_LOW();
 	SPI_TxRx(FLUSH_TX);
-	NRF24_CSN_High();
+	NRF24_CSN_HIGH();
 #ifdef  NRF24_Debug_Enable
 	Tx_String("NRF24_Flush_TX\n");
 #endif
@@ -466,9 +470,9 @@ void NRF24_Flush_TX(void)
 
 void NRF24_Flush_RX(void)
 {
-	NRF24_CSN_Low();
+	NRF24_CSN_LOW();
 	SPI_TxRx(FLUSH_RX);
-	NRF24_CSN_High();
+	NRF24_CSN_HIGH();
 #ifdef  NRF24_Debug_Enable
 	Tx_String("NRF24_Flush_RX\n");
 #endif
@@ -675,10 +679,12 @@ void NRF24_Set_Mode(NRF24_Mode mode)
 	{
 	case TX_Mode:
 		NRF24_Write_Register(CONFIG, (uint8_t) (config & ~CONFIG_PRIM_RX ));
+		NRF24_CE_LOW();      // Set CE pin Low for transmitter
 		break;
 
 	case RX_Mode:
 		NRF24_Write_Register(CONFIG, (uint8_t) (config | CONFIG_PRIM_RX ));
+		NRF24_CE_HIGH();      // Set CE pin High for receiver
 		break;
 
 	default:
@@ -741,9 +747,9 @@ void NRF24_Clear_IRQ(IRQ_Mask mask)
 
 void NRF24_Transmit_Payoad(void)
 {
-	NRF24_CE_High();
-	HAL_Delay(1); //50usec
-	NRF24_CE_Low();
+	NRF24_CE_HIGH();
+	Delay_us(50); //50usec
+	NRF24_CE_LOW();
 #ifdef  NRF24_Debug_Enable
 	Tx_String("NRF24_Transmit_Payoad\n");
 #endif
@@ -758,7 +764,7 @@ void NRF24_Enable_Dynamic_Payload(Pipe_No pipe)
 		temp = NRF24_Read_Register(FEATURE);
 		NRF24_Write_Register(FEATURE, (temp | EN_DPL ));
 		temp = NRF24_Read_Register(DYNPD);
-		NRF24_Write_Register(DYNPD, (temp) | (1 << pipe));
+		NRF24_Write_Register(DYNPD, (temp) | (pipe<<1));
 	}
 
 }
