@@ -10,8 +10,8 @@
 
 /* NRF24 definations  */
 
-#define NRF24_CSN_PORT      GPIOB
-#define NRF24_CSN_PIN       GPIO_PIN_1
+#define NRF24_CSN_PORT      GPIOA
+#define NRF24_CSN_PIN       GPIO_PIN_3
 
 #define NRF24_CE_PORT       GPIOA
 #define NRF24_CE_PIN        GPIO_PIN_4
@@ -198,16 +198,15 @@ void NRF24_Read_Buffer(uint8_t reg, uint8_t *buff_pointer, uint8_t bytes);
 
 void NRF24_Write_Buffer(uint8_t reg, uint8_t *addr_pointer, uint8_t bytes);
 
-void NRF24_Set_TX_Addrress(uint8_t *addr_pointer, uint8_t bytes);
+void NRF24_Set_TX_Address(uint8_t *addr_pointer, uint8_t bytes);
 
-uint8_t NRF24_Read_Addrress_Width(void);
+uint8_t NRF24_Read_Address_Width(void);
 
-void NRF24_Read_TX_Addrress(uint8_t *buff_pointer);
+void NRF24_Read_TX_Address(uint8_t *buff_pointer);
 
+void NRF24_Set_Pipe_Address(Pipe_No pipe, uint8_t *addr_pointer, uint8_t bytes);
 
-void NRF24_Set_Pipe_Addrress(Pipe_No pipe, uint8_t *addr_pointer, uint8_t bytes);
-
-void NRF24_Read_Pipe_Addrress(Pipe_No pipe, uint8_t *buff_pointer);
+void NRF24_Read_Pipe_Address(Pipe_No pipe, uint8_t *buff_pointer);
 
 void NRF24_Write_TX_Payload(uint8_t *addr_pointer, uint8_t bytes);
 

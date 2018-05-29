@@ -35,7 +35,6 @@ void NRF24_Init(void)
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 
-
 	GPIO_InitStruct.Pin = NRF24_CSN_PIN;
 	HAL_GPIO_Init(NRF24_CSN_PORT, &GPIO_InitStruct);
 
@@ -99,9 +98,6 @@ void NRF24_Power_Up(void)
 	uint8_t temp;
 	temp = NRF24_Read_Register(CONFIG);
 	NRF24_Write_Register(CONFIG, (uint8_t) (CONFIG_PWR_UP | temp));
-#ifdef  NRF24_Debug_Enable
-	Print_Debug_Register(18, CONFIG, (CONFIG_PWR_UP | temp));
-#endif
 }
 
 void NRF24_Power_Down(void)
@@ -109,9 +105,6 @@ void NRF24_Power_Down(void)
 	uint8_t temp;
 	temp = NRF24_Read_Register(CONFIG);
 	NRF24_Write_Register(CONFIG, (uint8_t) ((~CONFIG_PWR_UP ) & temp));
-#ifdef  NRF24_Debug_Enable
-	Print_Debug_Register(19, CONFIG, (uint8_t)((~CONFIG_PWR_UP ) & temp));
-#endif
 }
 
 void NRF24_Read_Buffer(uint8_t reg, uint8_t *buff_pointer, uint8_t bytes)
@@ -119,9 +112,6 @@ void NRF24_Read_Buffer(uint8_t reg, uint8_t *buff_pointer, uint8_t bytes)
 	uint8_t byte_ctr;
 	if (bytes <= 32)
 	{
-#ifdef  NRF24_Debug_Enable
-		Print_Debug_Buffer(4, reg, bytes , buff_pointer);
-#endif
 		NRF24_CSN_LOW();                     // Set CSN low, init SPI tranaction
 		SPI_TxRx(reg);  // Select register to write to and read status byte
 		for (byte_ctr = 0; byte_ctr < bytes; byte_ctr++)
@@ -145,9 +135,6 @@ void NRF24_Write_Buffer(uint8_t reg, uint8_t *addr_pointer, uint8_t bytes)
 	uint8_t byte_ctr;
 	if (bytes <= 32)
 	{
-#ifdef  NRF24_Debug_Enable
-		Print_Debug_Buffer(3, reg, bytes,addr_pointer);
-#endif
 		NRF24_CSN_LOW();                     // Set CSN low, init SPI tranaction
 		SPI_TxRx(WRITE_REG_NRF | reg);
 		for (byte_ctr = 0; byte_ctr < bytes; byte_ctr++)
@@ -166,7 +153,7 @@ void NRF24_Write_Buffer(uint8_t reg, uint8_t *addr_pointer, uint8_t bytes)
 
 }
 
-void NRF24_Set_TX_Addrress(uint8_t *addr_pointer, uint8_t bytes)
+void NRF24_Set_TX_Address(uint8_t *addr_pointer, uint8_t bytes)
 {
 	switch (bytes)
 	{
@@ -184,13 +171,13 @@ void NRF24_Set_TX_Addrress(uint8_t *addr_pointer, uint8_t bytes)
 		break;
 	default:
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Buffer(5, TX_ADDR, bytes , addr_pointer);
+		//_Error_Handler(char *file, int line);
 #endif
 		break;
 	}
 }
 
-uint8_t NRF24_Read_Addrress_Width(void)
+uint8_t NRF24_Read_Address_Width(void)
 {
 	uint8_t bytes = 0; //illegal address width
 	bytes = NRF24_Read_Register(SETUP_AW);
@@ -207,17 +194,17 @@ uint8_t NRF24_Read_Addrress_Width(void)
 		break;
 	default:
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Buffer(6, TX_ADDR, bytes , buff_pointer);
+		//_Error_Handler(char *file, int line);
 #endif
 		break;
 	}
 	return bytes;
 }
 
-void NRF_Read_TX_Address(uint8_t *buff_pointer)
+void NRF24_Read_TX_Address(uint8_t *buff_pointer)
 {
 	uint8_t bytes;
-	bytes = NRF24_Read_Addrress_Width();
+	bytes = NRF24_Read_Address_Width();
 	switch (bytes)
 	{
 	case 1:
@@ -231,13 +218,13 @@ void NRF_Read_TX_Address(uint8_t *buff_pointer)
 		break;
 	default:
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Buffer(6, TX_ADDR, bytes , buff_pointer);
+		//_Error_Handler(char *file, int line);
 #endif
 		break;
 	}
 }
 
-void NRF24_Set_Pipe_Addrress(Pipe_No pipe, uint8_t *addr_pointer, uint8_t bytes)
+void NRF24_Set_Pipe_Address(Pipe_No pipe, uint8_t *addr_pointer, uint8_t bytes)
 {
 
 	switch (bytes)
@@ -253,7 +240,7 @@ void NRF24_Set_Pipe_Addrress(Pipe_No pipe, uint8_t *addr_pointer, uint8_t bytes)
 		break;
 	default:
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Buffer(5, TX_ADDR, bytes , addr_pointer);
+		//_Error_Handler(char *file, int line);
 #endif
 		break;
 	}
@@ -274,16 +261,16 @@ void NRF24_Set_Pipe_Addrress(Pipe_No pipe, uint8_t *addr_pointer, uint8_t bytes)
 
 	default:
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Buffer(5, TX_ADDR, bytes , addr_pointer);
+		//_Error_Handler(char *file, int line);
 #endif
 		break;
 	}
 }
 
-void NRF24_Read_Pipe_Addrress(Pipe_No pipe, uint8_t *buff_pointer)
+void NRF24_Read_Pipe_Address(Pipe_No pipe, uint8_t *buff_pointer)
 {
 	uint8_t bytes;
-	bytes = NRF24_Read_Addrress_Width();   //
+	bytes = NRF24_Read_Address_Width();   //
 
 	switch (pipe)
 	{
@@ -301,15 +288,15 @@ void NRF24_Read_Pipe_Addrress(Pipe_No pipe, uint8_t *buff_pointer)
 
 	default:
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Buffer(5, TX_ADDR, bytes , addr_pointer);
+		//_Error_Handler(char *file, int line);
 #endif
 		break;
 	}
 
 }
 /*
-The width of TX-payload
-is counted from the number of bytes written into the TX FIFO from the MCU. */
+ The width of TX-payload
+ is counted from the number of bytes written into the TX FIFO from the MCU. */
 void NRF24_Write_TX_Payload(uint8_t *buff_pointer, uint8_t bytes)
 {
 	if (bytes <= 32)
@@ -319,7 +306,7 @@ void NRF24_Write_TX_Payload(uint8_t *buff_pointer, uint8_t bytes)
 	else
 	{
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Buffer(9, WR_TX_PLOAD, bytes , addr_pointer);
+		//_Error_Handler(char *file, int line);
 #endif
 	}
 }
@@ -333,7 +320,7 @@ void NRF24_Read_RX_Payload(uint8_t *buff_pointer, uint8_t bytes)
 	else
 	{
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Buffer(10, RD_RX_PLOAD, bytes , buff_pointer);
+		//_Error_Handler(char *file, int line);
 #endif
 	}
 }
@@ -344,13 +331,13 @@ void NRF24_Enable_Pipe(Pipe_No pipe)
 	if (pipe <= Pipe5)
 	{
 		pipes = NRF24_Read_Register(EN_RXADDR);
-		pipes |= (pipe<<1);
+		pipes |= (pipe << 1);
 		NRF24_Write_Register(EN_RXADDR, pipes);
 	}
 	else
 	{
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Register(11, EN_RXADDR, pipes);
+		//_Error_Handler(char *file, int line);
 #endif
 	}
 }
@@ -361,13 +348,13 @@ void NRF24_Disble_Pipe(Pipe_No pipe)
 	if (pipe <= Pipe5)
 	{
 		pipes = NRF24_Read_Register(EN_RXADDR);
-		pipes &= ~(pipe<<1);
+		pipes &= ~(pipe << 1);
 		NRF24_Write_Register(EN_RXADDR, pipes);
 	}
 	else
 	{
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Register(11, EN_RXADDR, pipes);
+		//_Error_Handler(char *file, int line);
 #endif
 	}
 }
@@ -378,14 +365,14 @@ void NRF24_Enable_Auto_ACK(Pipe_No pipe)
 	if (pipe <= Pipe5)
 	{
 		pipes = NRF24_Read_Register(EN_AA);
-		pipes |= (pipe<<1);
+		pipes |= (pipe << 1);
 		NRF24_Write_Register(EN_AA, pipes);
 
 	}
 	else
 	{
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Register(12, EN_AA, pipes);
+		//_Error_Handler(char *file, int line);
 #endif
 	}
 }
@@ -396,14 +383,14 @@ void NRF24_Disble_Auto_ACK(Pipe_No pipe)
 	if (pipe <= Pipe5)
 	{
 		pipes = NRF24_Read_Register(EN_AA);
-		pipes &= ~(pipe<<1);
+		pipes &= ~(pipe << 1);
 		NRF24_Write_Register(EN_AA, pipes);
 
 	}
 	else
 	{
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Register(12, EN_AA, pipes);
+		//_Error_Handler(char *file, int line);
 #endif
 	}
 }
@@ -417,7 +404,7 @@ void NRF24_Set_RF_Channel(uint8_t channel)
 	else
 	{
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Register(13, RF_CH, channel);
+		//_Error_Handler(char *file, int line);
 #endif
 	}
 }
@@ -426,9 +413,7 @@ uint8_t NRF24_Read_RF_Channel(void)
 {
 	uint8_t channel;
 	channel = NRF24_Read_Register(RF_CH);
-#ifdef  NRF24_Debug_Enable
-	Print_Debug_Register(14, RF_CH, channel);
-#endif
+
 	return channel;
 }
 
@@ -442,7 +427,7 @@ void NRF24_Set_Pipe_Data_Width(Pipe_No pipe, uint8_t width)
 	else
 	{
 #ifdef  NRF24_Debug_Enable
-		Print_Debug_Register(15, (RX_PW_P0 + pipe), width);
+		//_Error_Handler(char *file, int line);
 #endif
 	}
 }
@@ -452,9 +437,6 @@ uint8_t NRF24_Read_Pipe_Data_Width(Pipe_No pipe)
 	uint8_t width;
 	width = NRF24_Read_Register((RX_PW_P0 + pipe));
 
-#ifdef  NRF24_Debug_Enable
-	Print_Debug_Register(15, (RX_PW_P0 + pipe), width);
-#endif
 	return width;
 }
 
@@ -463,9 +445,6 @@ void NRF24_Flush_TX(void)
 	NRF24_CSN_LOW();
 	SPI_TxRx(FLUSH_TX);
 	NRF24_CSN_HIGH();
-#ifdef  NRF24_Debug_Enable
-	Tx_String("NRF24_Flush_TX\n");
-#endif
 }
 
 void NRF24_Flush_RX(void)
@@ -473,18 +452,11 @@ void NRF24_Flush_RX(void)
 	NRF24_CSN_LOW();
 	SPI_TxRx(FLUSH_RX);
 	NRF24_CSN_HIGH();
-#ifdef  NRF24_Debug_Enable
-	Tx_String("NRF24_Flush_RX\n");
-#endif
-
 }
 
 uint8_t NRF24_Read_RPD(void)
 {
 	return (NRF24_Read_Register(RPD) & (0x01));
-#ifdef  NRF24_Debug_Enable
-	Tx_String("NRF24_Read_RPD\n");
-#endif
 }
 
 void NRF24_Set_Power_Level(NRF24_Power_Level level)
@@ -514,7 +486,9 @@ void NRF24_Set_Power_Level(NRF24_Power_Level level)
 		break;
 
 	default:
+#ifdef  NRF24_Debug_Enable
 		//_Error_Handler(char *file, int line);
+#endif
 		break;
 	}
 
@@ -526,9 +500,7 @@ NRF24_Power_Level NRF24_Read_Power_Level(void)
 	temp = NRF24_Read_Register(RF_SETUP);
 	temp &= (RF_PWR1 | RF_PWR0 );
 	temp = temp >> 1;
-#ifdef  NRF24_Debug_Enable
-	Print_Debug_Register(22, RF_SETUP, temp);
-#endif
+
 	return ((NRF24_Power_Level) temp);
 }
 
@@ -557,14 +529,11 @@ void NRF24_Set_Data_Rate(NRF24_Data_Rate speed)
 		break;
 
 	default:
+#ifdef  NRF24_Debug_Enable
 		//_Error_Handler(char *file, int line);
+#endif
 		break;
 	}
-
-#ifdef  NRF24_Debug_Enable
-	Print_Debug_Register(23, RF_SETUP, setup);
-#endif
-
 }
 
 NRF24_Data_Rate NRF24_Read_Data_Rate(void)
@@ -584,9 +553,7 @@ NRF24_Data_Rate NRF24_Read_Data_Rate(void)
 	{
 		temp = Data_Rate_2Mbs;
 	}
-#ifdef  NRF24_Debug_Enable
-	Print_Debug_Register(24, RF_SETUP, temp);
-#endif
+
 	return ((NRF24_Data_Rate) temp);
 }
 
@@ -615,13 +582,13 @@ void NRF24_Set_CRC_Length(NRF24_CRC_Length length)
 			config |= CONFIG_CRCO;
 			NRF24_Write_Register( CONFIG, config);
 		}
-#ifdef  NRF24_Debug_Enable
-		Print_Debug_Register(25, CONFIG, config);
-#endif
 	}
 	else
 	{
+#ifdef  NRF24_Debug_Enable
 		//_Error_Handler(char *file, int line);
+#endif
+
 	}
 }
 
@@ -647,9 +614,7 @@ NRF24_CRC_Length NRF24_Read_CRC_Length(void)
 	{
 		result = Disable_CRC;
 	}
-#ifdef  NRF24_Debug_Enable
-	Print_Debug_Register(26, CONFIG, result);
-#endif
+
 	return (NRF24_CRC_Length) result;
 }
 
@@ -657,17 +622,15 @@ void NRF24_Set_Retries(ARD_Delay delay, uint8_t count)
 {
 	if (delay > 15 || count > 15)
 	{
+#ifdef  NRF24_Debug_Enable
 		//_Error_Handler(char *file, int line);
+#endif
 	}
 
 	else
 	{
 		NRF24_Write_Register(SETUP_RETR,
 				((delay & 0xf) << 4) | ((count & 0xf) << 0));
-#ifdef  NRF24_Debug_Enable
-		Print_Debug_Register(27, SETUP_RETR, NRF24_Read_Register(SETUP_RETR));
-#endif
-
 	}
 }
 
@@ -688,12 +651,11 @@ void NRF24_Set_Mode(NRF24_Mode mode)
 		break;
 
 	default:
+#ifdef  NRF24_Debug_Enable
 		//_Error_Handler(char *file, int line);
+#endif
 		break;
 	}
-#ifdef  NRF24_Debug_Enable
-	Print_Debug_Register(28, CONFIG, NRF24_Read_Register(CONFIG));
-#endif
 }
 
 void NRF24_Disable_IRQ(IRQ_Mask mask)
@@ -715,9 +677,6 @@ void NRF24_Disable_IRQ(IRQ_Mask mask)
 		NRF24_Write_Register(CONFIG, (config | CONFIG_RX_DR ));
 
 	}
-#ifdef  NRF24_Debug_Enable
-	Print_Debug_Register(29, CONFIG, NRF24_Read_Register(CONFIG));
-#endif
 }
 
 void NRF24_Clear_IRQ(IRQ_Mask mask)
@@ -739,10 +698,6 @@ void NRF24_Clear_IRQ(IRQ_Mask mask)
 		NRF24_Write_Register(STATUS, (status | STAT_RX_DR ));
 
 	}
-#ifdef  NRF24_Debug_Enable
-	Print_Debug_Register(30, STATUS, NRF24_Read_Register(STATUS));
-#endif
-
 }
 
 void NRF24_Transmit_Payoad(void)
@@ -750,10 +705,6 @@ void NRF24_Transmit_Payoad(void)
 	NRF24_CE_HIGH();
 	Delay_us(50); //50usec
 	NRF24_CE_LOW();
-#ifdef  NRF24_Debug_Enable
-	Tx_String("NRF24_Transmit_Payoad\n");
-#endif
-
 }
 
 void NRF24_Enable_Dynamic_Payload(Pipe_No pipe)
@@ -764,7 +715,7 @@ void NRF24_Enable_Dynamic_Payload(Pipe_No pipe)
 		temp = NRF24_Read_Register(FEATURE);
 		NRF24_Write_Register(FEATURE, (temp | EN_DPL ));
 		temp = NRF24_Read_Register(DYNPD);
-		NRF24_Write_Register(DYNPD, (temp) | (pipe<<1));
+		NRF24_Write_Register(DYNPD, (temp) | (pipe << 1));
 	}
 
 }
@@ -786,7 +737,7 @@ void NRF24_Write_ACK_Payload(uint8_t pipe, uint8_t *buf, uint8_t bytes)
 	else
 	{
 #ifdef  NRF24_Debug_Enable
-		//Print_Debug_Buffer(NRF24_Write_ACK_Payload);
+		//_Error_Handler(char *file, int line);
 #endif
 	}
 }

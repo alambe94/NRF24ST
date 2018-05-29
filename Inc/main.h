@@ -1,11 +1,16 @@
 /**
   ******************************************************************************
-  * File Name          : I2C.h
-  * Description        : This file provides code for the configuration
-  *                      of the I2C instances.
+  * @file           : main.h
+  * @brief          : Header for main.c file.
+  *                   This file contains the common defines of the application.
   ******************************************************************************
+  ** This notice applies to any and all portions of this file
+  * that are not between comment pairs USER CODE BEGIN and
+  * USER CODE END. Other portions of this file, whether 
+  * inserted by the user or by software development tools
+  * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2016 STMicroelectronics
+  * COPYRIGHT(c) 2018 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -31,45 +36,47 @@
   *
   ******************************************************************************
   */
+
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __i2c_H
-#define __i2c_H
-#ifdef __cplusplus
- extern "C" {
-#endif
+#ifndef __MAIN_H__
+#define __MAIN_H__
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f0xx_hal.h"
 
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
-extern I2C_HandleTypeDef hi2c1;
+/* Private define ------------------------------------------------------------*/
+
+#define CE_Pin GPIO_PIN_4
+#define CE_GPIO_Port GPIOA
+#define IRQ_Pin GPIO_PIN_0
+#define IRQ_GPIO_Port GPIOB
+#define CSN_Pin GPIO_PIN_1
+#define CSN_GPIO_Port GPIOB
+
+/* ########################## Assert Selection ############################## */
+/**
+  * @brief Uncomment the line below to expanse the "assert_param" macro in the 
+  *        HAL drivers code
+  */
+/* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
-extern void Error_Handler(void);
+#ifdef __cplusplus
+ extern "C" {
+#endif
+void _Error_Handler(char *, int);
 
-void MX_I2C1_Init(void);
-
-/* USER CODE BEGIN Prototypes */
-
-/* USER CODE END Prototypes */
-
+#define Error_Handler() _Error_Handler(__FILE__, __LINE__)
 #ifdef __cplusplus
 }
 #endif
-#endif /*__ i2c_H */
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
+#endif /* __MAIN_H__ */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
