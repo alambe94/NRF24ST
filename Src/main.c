@@ -51,6 +51,13 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+
+#define NRF24_CSN_PORT      GPIOB
+#define NRF24_CSN_PIN       GPIO_PIN_1
+
+#define NRF24_CE_PORT       GPIOA
+#define NRF24_CE_PIN        GPIO_PIN_4
+
 #define NRF24_ADDRESS_WIDTH      5
 #define NRF24_PAYLOAD_WIDTH      10 //bytes
 uint8_t NRF24_Address[NRF24_ADDRESS_WIDTH] ={ 0x0A, 0x0B, 0x0C, 0x0D, 0x0E };
@@ -70,7 +77,7 @@ void SystemClock_Config(void);
 uint8_t NRF24_Config()
 {
 	uint8_t status = 0;
-	NRF24_Init();
+	NRF24_Init(NRF24_CSN_PIN, NRF24_CSN_PORT, NRF24_CE_PIN, NRF24_CE_PORT);
 	NRF24_Set_TX_Address(NRF24_Address, NRF24_ADDRESS_WIDTH);
 	NRF24_Set_Pipe_Address(Pipe0, NRF24_Address, NRF24_ADDRESS_WIDTH);
 	NRF24_Set_Pipe_Data_Width(Pipe0, NRF24_PAYLOAD_WIDTH);

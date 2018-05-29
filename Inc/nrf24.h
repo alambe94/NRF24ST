@@ -16,19 +16,6 @@
 
 /* NRF24 definations  */
 
-#define NRF24_CSN_PORT      GPIOA
-#define NRF24_CSN_PIN       GPIO_PIN_3
-
-#define NRF24_CE_PORT       GPIOA
-#define NRF24_CE_PIN        GPIO_PIN_4
-
-#define NRF24_CSN_LOW()     HAL_GPIO_WritePin(NRF24_CSN_PORT, NRF24_CSN_PIN, GPIO_PIN_RESET)
-#define NRF24_CSN_HIGH()    HAL_GPIO_WritePin(NRF24_CSN_PORT, NRF24_CSN_PIN, GPIO_PIN_SET)
-
-#define NRF24_CE_LOW()      HAL_GPIO_WritePin(NRF24_CE_PORT, NRF24_CE_PIN, GPIO_PIN_RESET)
-#define NRF24_CE_HIGH()     HAL_GPIO_WritePin(NRF24_CE_PORT, NRF24_CE_PIN, GPIO_PIN_SET)
-
-
 /* nRF24L01 Instruction Definitions */
 #define WRITE_REG_NRF     	(uint8_t)0x20
 #define RD_RX_PLOAD_W   (uint8_t)0x60
@@ -188,7 +175,7 @@ typedef enum {
 		Rx_Data_Received
 } IRQ_Mask,NRF24_Status;
 
-void NRF24_Init(void);
+void NRF24_Init(uint16_t _NRF24_CSN_Pin, GPIO_TypeDef* _NRF24_CSN_Port, uint16_t _NRF24_CE_Pin, GPIO_TypeDef* _NRF24_CE_Port);
 
 uint8_t SPI_TxRx(uint8_t reg);
 
