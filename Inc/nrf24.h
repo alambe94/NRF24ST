@@ -8,6 +8,12 @@
 #ifndef NRF24_H_
 #define NRF24_H_
 
+#include "stm32f0xx_hal.h"
+#include "spi.h"
+#include "gpio.h"
+#include "nrf24.h"
+#include "delay_us.h"
+
 /* NRF24 definations  */
 
 #define NRF24_CSN_PORT      GPIOA

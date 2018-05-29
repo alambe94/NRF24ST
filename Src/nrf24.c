@@ -4,11 +4,8 @@
  *  Created on: Sep 20, 2016
  *      Author: medprime4
  */
-#include "stm32f0xx_hal.h"
-#include "spi.h"
-#include "gpio.h"
+
 #include "nrf24.h"
-#include "delay_us.h"
 
 void NRF24_Init(void)
 {
