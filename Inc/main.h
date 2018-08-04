@@ -49,12 +49,6 @@
 
 /* Private define ------------------------------------------------------------*/
 
-#define CE_Pin GPIO_PIN_4
-#define CE_GPIO_Port GPIOA
-#define IRQ_Pin GPIO_PIN_0
-#define IRQ_GPIO_Port GPIOB
-#define CSN_Pin GPIO_PIN_1
-#define CSN_GPIO_Port GPIOB
 
 /* ########################## Assert Selection ############################## */
 /**
@@ -64,6 +58,13 @@
 /* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
+
+
+#define _NRF24_CSN_PORT      GPIOB
+#define _NRF24_CSN_PIN       GPIO_PIN_1
+
+#define _NRF24_CE_PORT       GPIOA
+#define _NRF24_CE_PIN        GPIO_PIN_4
 
 /* USER CODE END Private defines */
 

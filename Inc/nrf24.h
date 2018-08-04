@@ -14,6 +14,43 @@
 #include "nrf24.h"
 #include "delay_us.h"
 
+
+#ifndef _NRF24_CSN_PIN
+#error "Please define _NRF24_CSN_PIN as MCU GPIO_PIN in main.h"
+#endif
+
+#ifndef _NRF24_CSN_PORT
+#error "Please define _NRF24_CSN_PORT as MCU GPIO_PORT  in main.h"
+#endif
+
+#ifndef _NRF24_CE_PIN
+#error "Please define _NRF24_CE_PIN as MCU GPIO_PIN  in main.h"
+#endif
+
+#ifndef _NRF24_CE_PORT
+#error "Please define _NRF24_CE_PORT as MCU GPIO_PORT  in main.h"
+#endif
+
+
+#define NRF24_CSN_PIN		_NRF24_CSN_PIN
+#define NRF24_CSN_PORT		_NRF24_CSN_PORT
+
+
+#define NRF24_CE_PIN		_NRF24_CE_PIN
+#define NRF24_CE_PORT		_NRF24_CE_PORT
+
+#ifdef  _NRF24_IRQ_PIN
+#define NRF24_IRQ_PIN		_NRF24_IRQ_PIN
+#warning "plaese implement _NRF24_IRQ_PIN GPIO ISR to handle interrupt and disable this warning"
+#endif
+
+#ifdef  _NRF24_IRQ_PORT
+#define NRF24_IRQ_PORT		_NRF24_IRQ_PORT
+#warning "plaese implement _NRF24_IRQ_PIN GPIO ISR to handle interrupt and disable this warning"
+#endif
+
+
+
 /* NRF24 definations  */
 
 /* nRF24L01 Instruction Definitions */
@@ -175,7 +212,7 @@ typedef enum {
 		Rx_Data_Received
 } IRQ_Mask,NRF24_Status;
 
-void NRF24_Init(uint16_t _NRF24_CSN_Pin, GPIO_TypeDef* _NRF24_CSN_Port, uint16_t _NRF24_CE_Pin, GPIO_TypeDef* _NRF24_CE_Port);
+void NRF24_Init();
 
 uint8_t SPI_TxRx(uint8_t reg);
 

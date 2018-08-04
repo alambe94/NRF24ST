@@ -7,20 +7,15 @@
 
 #include "nrf24.h"
 
-static GPIO_TypeDef* NRF24_CSN_Port=GPIOB;
-static uint16_t      NRF24_CSN_Pin=0;
 
-static GPIO_TypeDef* NRF24_CE_Port=GPIOB;
-static uint16_t      NRF24_CE_Pin=0;
+#define NRF24_CSN_LOW()     HAL_GPIO_WritePin(NRF24_CSN_PORT, NRF24_CSN_PIN, GPIO_PIN_RESET)
+#define NRF24_CSN_HIGH()    HAL_GPIO_WritePin(NRF24_CSN_PORT, NRF24_CSN_PIN, GPIO_PIN_SET)
 
-#define NRF24_CSN_LOW()     HAL_GPIO_WritePin(NRF24_CSN_Port, NRF24_CSN_Pin, GPIO_PIN_RESET)
-#define NRF24_CSN_HIGH()    HAL_GPIO_WritePin(NRF24_CSN_Port, NRF24_CSN_Pin, GPIO_PIN_SET)
-
-#define NRF24_CE_LOW()      HAL_GPIO_WritePin(NRF24_CE_Port, NRF24_CE_Pin, GPIO_PIN_RESET)
-#define NRF24_CE_HIGH()     HAL_GPIO_WritePin(NRF24_CE_Port, NRF24_CE_Pin, GPIO_PIN_SET)
+#define NRF24_CE_LOW()      HAL_GPIO_WritePin(NRF24_CE_PORT, NRF24_CE_PIN, GPIO_PIN_RESET)
+#define NRF24_CE_HIGH()     HAL_GPIO_WritePin(NRF24_CE_PORT, NRF24_CE_PIN, GPIO_PIN_SET)
 
 
-void NRF24_Init(uint16_t _NRF24_CSN_Pin, GPIO_TypeDef* _NRF24_CSN_Port, uint16_t _NRF24_CE_Pin, GPIO_TypeDef* _NRF24_CE_Port)
+void NRF24_Init()
 {
 	/*************SPI port configured in cube***********************/
 
@@ -33,12 +28,6 @@ void NRF24_Init(uint16_t _NRF24_CSN_Pin, GPIO_TypeDef* _NRF24_CSN_Port, uint16_t
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 
 
-	NRF24_CSN_Port=_NRF24_CSN_Port;
-	NRF24_CSN_Pin=_NRF24_CSN_Pin;
-
-	NRF24_CE_Port=_NRF24_CE_Port;
-	NRF24_CE_Pin=_NRF24_CE_Pin;
-
 	/*Configure GPIO pin Output Level */
 	NRF24_CSN_HIGH();
 	NRF24_CE_HIGH();
@@ -48,11 +37,18 @@ void NRF24_Init(uint16_t _NRF24_CSN_Pin, GPIO_TypeDef* _NRF24_CSN_Port, uint16_t
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 
-	GPIO_InitStruct.Pin = NRF24_CSN_Pin;
-	HAL_GPIO_Init(NRF24_CSN_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = NRF24_CSN_PIN;
+	HAL_GPIO_Init(NRF24_CSN_PORT, &GPIO_InitStruct);
 
-	GPIO_InitStruct.Pin = NRF24_CE_Pin;
-	HAL_GPIO_Init(NRF24_CE_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = NRF24_CE_PIN;
+	HAL_GPIO_Init(NRF24_CE_PORT, &GPIO_InitStruct);
+
+#ifdef NRF24_IRQ_PIN
+	GPIO_InitStruct.Pin =  NRF24_IRQ_PIN;
+	GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(NRF24_IRQ_PORT, &GPIO_InitStruct);
+#endif
 
 }
 
